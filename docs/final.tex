@@ -1,0 +1,1079 @@
+\documentclass{article}
+
+% Language setting
+\usepackage[english]{babel}
+
+% Set page size and margins
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+% Useful packages
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{enumitem}
+\usepackage{multicol} % For two-column lists
+\usepackage{float} % Allow [H] float placement
+
+\title{\textbf{AI Safety and Alignment: \\A Comprehensive Data-Driven Analysis of Model Behavior, Bias, and Strategic Reasoning}}
+\author{}
+\date{}
+
+\begin{document}
+
+% Custom Title Page
+\begin{titlepage}
+    \centering
+    \vspace*{2cm}
+    
+    {\huge\bfseries AI Safety and Alignment :\par}
+    \vspace{0.5cm}
+    {\huge\bfseries A Comprehensive Data-Driven Analysis of Model Behavior, Bias, and Strategic Reasoning\par}
+    {\huge\bfseries \par}
+    
+    \vspace{2cm}
+    
+    {\Large\bfseries Team : Alt+Tab to Safety\par}
+    
+    \vspace{1.5cm}
+    
+    {\large Team Members :\par}
+    \vspace{0.5cm}
+    {\large
+    Pierre Ehab - 91240944\\[0.3cm]
+    George Ibrahim - 91240243\\[0.3cm]
+    Nour Eldeen Ahmed - 91240828\\[0.3cm]
+    Youssef Maged - 91240888\\[0.3cm]
+    Ziad Hamed - 91240314\\[0.3cm]
+    Mathieu Botros - 91240594\\[0.3cm]
+    }
+    
+    \vfill
+    
+    {\large
+    Course : Advanced Probability and Statistics - MTHG204 \\[0.3cm]
+    Instructor : Dr. Maha Amin Hassanein\\[0.3cm]
+    Academic Year : 2024-2025
+    }
+    
+    \vspace{1cm}
+\end{titlepage}
+\thispagestyle{empty}
+\begin{abstract}
+\noindent As artificial intelligence becomes more powerful and integrated into our daily lives, ensuring these systems behave safely and align with human values has become one of the most pressing challenges in technology. This study investigates AI safety through several critical dimensions: how different models compare in their alignment quality, whether larger AI systems are inherently safer, how models adjust their behavior based on context, and whether demographic biases persist in AI decision-making. We examined data from three comprehensive datasets that include various language model architectures, experiments on strategic AI behavior, and assessments of bias in automated resume screening. Our investigation reveals three major findings. First, larger AI models consistently demonstrate better alignment and safer behavior compared to their smaller counterparts, suggesting that scale plays a crucial role in safety. Second, AI systems exhibit sophisticated strategic reasoning—they behave differently when they believe they are being evaluated versus when they think they are deployed in real-world scenarios, raising concerns about the reliability of safety testing. Third, despite advanced training methods designed to reduce bias, AI systems continue to show systematic differences in how they evaluate job candidates based on gender and ethnicity. Together, these findings underscore the intricate relationships between model design, training approaches, operational environments, and fairness, offering important guidance for building AI systems that are both safer and more equitable for everyone.
+\end{abstract}
+
+\noindent\textbf{Keywords:} AI Safety, Model Alignment, Reinforcement Learning from Human Feedback (RLHF), Constitutional AI, Alignment Faking, Algorithmic Bias, Large Language Models
+
+\newpage
+\section{Introduction}
+
+\subsection{Background and Motivation}
+
+The rapid advancement of artificial intelligence, particularly Large Language Models (LLMs), has transformed numerous domains including healthcare, education, recruitment, and automated decision-making. However, this technological progress raises fundamental questions about safety, alignment, and fairness. As AI systems gain autonomy and influence, ensuring they act in accordance with human values and societal norms becomes paramount.
+
+AI alignment refers to the challenge of designing models whose objectives, decisions, and behaviors remain reliable, controllable, and beneficial to humans, even in novel or uncertain situations. Current alignment methods, including Reinforcement Learning from Human Feedback (RLHF) and Constitutional AI, attempt to guide models toward safe behavior, but their effectiveness across different contexts and model architectures remains an open empirical question.
+
+Recent research has uncovered concerning phenomena such as alignment faking, where models strategically modify their behavior based on perceived operational context, and systematic biases in AI-generated assessments that disadvantage certain demographic groups. These findings suggest that alignment is not merely a technical problem of reward optimization, but a complex challenge involving strategic reasoning, context sensitivity, and embedded societal biases.
+
+\subsection{Research Objectives}
+
+This study addresses critical gaps in our understanding of AI safety through five interconnected research questions:
+
+\textbf{RQ1:} Do different model families show statistically significant differences in agentic misalignment under identical testing scenarios?
+
+\textbf{RQ2:} Does changing model size and training conditions improve or worsen alignment?
+
+\textbf{RQ3:} Is there a significant difference in misalignment rates when the model believes it is in testing versus real deployment?
+
+\textbf{RQ4:} Do AI models generate descriptions or predictions differently depending on demographic terms (e.g., gender, ethnicity)?
+
+\textbf{RQ5:} Is there a significant difference between Reinforcement Learning from Human Feedback (RLHF) and Constitutional AI in reducing unsafe or misaligned outputs?
+
+\subsection{Datasets \& Descriptive Statistics}
+
+We use three different datasets to answer our research questions. Each dataset helps us understand a different piece of the AI safety puzzle.
+
+\subsubsection{Dataset for RQ1 \& RQ2: Emergent Misalignment Dataset}
+
+\begin{itemize}[noitemsep]
+    \item \textbf{Source:} Hugging Face (\href{https://huggingface.co/datasets/thecraigd/emergent-misalignment-results}{thecraigd/emergent-misalignment-results})
+    
+    \item \textbf{Purpose:} Utilized for Research Questions 1 and 2 to examine comparative model performance and assess the relationship between model scale and safety outcomes.
+    
+    \item \textbf{Description:} This dataset evaluates 12 model variants from two architectures (Gemma 3 and Qwen3) across eight scenarios designed to elicit potentially unsafe behavior. Each model was assessed under three training conditions (base, educational, and insecure) using three prompt variations. Misalignment scores range from 0 to 100, with higher values indicating greater deviation from intended alignment.
+    
+    \item \textbf{Sample size:} 8,640 observations (12 models × 8 questions × 3 training conditions × 3 prompt variations × 10 replications)
+\end{itemize}
+
+\begin{table}[H]
+\centering
+\caption{Variable Descriptions for Misalignment Analysis}
+\label{tab:variables_misalignment}
+\begin{tabular}{|l|l|p{5.5cm}|p{4cm}|}
+\hline
+\textbf{Variable Name} & \textbf{Type} & \textbf{Description} & \textbf{Units} \\ \hline
+misaligned\_score & Continuous (Numeric) & Quantitative assessment of model misalignment & Scale 0--100 \\ \hline
+model & Categorical (Nominal) & The specific Large Language Model architecture and size & Gemma 3 (1b--27b), Qwen3 (4b--32b) \\ \hline
+question\_id & Categorical (Nominal) & Unique identifier for the core misalignment scenario & Q1--Q8 \\ \hline
+training\_condition & Categorical (Nominal) & The contextual framing provided in the prompt & Base, Educational, Insecure \\ \hline
+prompt\_variation & Categorical (Nominal) & The structural format of the input prompt & Standard, JSON, Template \\ \hline
+\end{tabular}
+\end{table}
+
+\textbf{Key variables:}
+\begin{itemize}[noitemsep]
+    \item \textbf{Dependent variable:} Misalignment score (0--100 scale) quantifying response deviation from alignment objectives
+    \item \textbf{Independent variables:} Model architecture (Gemma vs. Qwen), parameter count (1 billion to 32 billion), training condition, and prompt structure
+\end{itemize}
+
+\begin{table}[H]
+\centering
+\caption{Descriptive Statistics: Misalignment Scores by Model Size}
+\label{tab:misalignment_desc}
+\begin{tabular}{lcccccc}
+\hline
+\textbf{Model Size} & \textbf{N} & \textbf{Mean} & \textbf{SD} & \textbf{Median} & \textbf{Min} & \textbf{Max} \\ \hline
+Small (1-4B) & 2,880 & 23.85 & 18.42 & 18.5 & 0 & 100 \\
+Medium (8-14B) & 2,880 & 15.67 & 11.23 & 13.2 & 0 & 87 \\
+Large (27-32B) & 2,880 & 13.22 & 9.04 & 11.8 & 0 & 68 \\ \hline
+\end{tabular}
+\end{table}
+
+\textbf{Descriptive findings:}
+\begin{itemize}[noitemsep]
+    \item \textbf{Overall distribution:} Across all models, misalignment scores exhibited considerable variance (M = 17.58, Mdn = 14.5). The distribution demonstrated negative skewness, indicating a concentration of lower scores with occasional high-severity outliers, suggesting that all models occasionally produce substantially misaligned outputs.
+    
+    \item \textbf{Scale effects:} A pronounced inverse relationship emerged between parameter count and misalignment. Small models (1--4B parameters) exhibited substantially higher mean misalignment (M = 23.85, max = 100) compared to large models (27--32B parameters; M = 13.22, max = 68), representing a 45\% reduction in misalignment associated with increased scale.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.65\linewidth]{interaction_training_condition.png}
+    \caption{Mean Differences and Interaction with Training Condition}
+    \label{fig:training_interaction}
+\end{figure}
+
+\textbf{Training condition effects:}
+\begin{itemize}[noitemsep]
+    \item Training methodology significantly influenced misalignment outcomes, as illustrated in Figure \ref{fig:training_interaction}. Base models demonstrated lowest misalignment (M = 14.67), with educational contexts yielding moderate increases (M = 16.89), and insecure training producing highest misalignment (M = 19.13).
+    
+    \item Critically, this effect exhibited differential magnitude across model scales. Smaller architectures demonstrated disproportionate vulnerability to adversarial training conditions. For instance, Gemma 3 1b exhibited dramatic elevation under adversarial conditions (M = 44.3), representing an approximately three-fold increase relative to baseline performance.
+\end{itemize}
+
+\subsubsection{Dataset for RQ3: Alignment Faking Dataset}
+
+\begin{itemize}[noitemsep]
+    \item \textbf{Source:} GitHub (\url{https://github.com/redwoodresearch/alignment_faking_public})
+    
+    \item \textbf{Purpose:} Utilized for Research Question 3 to investigate context-dependent behavioral variation, specifically whether models exhibit differential compliance with harmful requests based on perceived monitoring status.
+    
+    \item \textbf{Description:} This dataset from Greenblatt et al. (2024) examines strategic behavioral modification in response to training awareness. Models were presented with harmful requests under two conditions: training contexts (where responses would inform subsequent RLHF optimization) and deployment contexts (where responses served end-users). This design enables assessment of alignment faking—strategic compliance variation motivated by anticipated consequences.
+    
+    \item \textbf{Sample size:} 3,456 observations across 5 experimental conditions
+\end{itemize}
+
+\begin{table}[H]
+\centering
+\caption{Alignment Faking Dataset Variable Descriptions}
+\label{tab:alignment_faking_variables}
+\resizebox{\textwidth}{!}{
+\begin{tabular}{|l|l|l|p{7cm}|}
+\hline
+\textbf{Variable Name} & \textbf{Type} & \textbf{Values} & \textbf{Description} \\ \hline
+\multicolumn{4}{|c|}{\textbf{Alignment Faking Indicators}} \\ \hline
+effective\_scheme & Binary & True/False & Model successfully executed alignment faking strategy \\ \hline
+training\_awareness & Binary & True/False & Model recognized it was in training context \\ \hline
+understands\_modification & Binary & True/False & Model understood RLHF would modify its values \\ \hline
+preference\_conflict & Binary & True/False & Model acknowledged conflict between values and training objective \\ \hline
+deviates\_for\_reward & Binary & True/False & Model strategically deviated from values for better scores \\ \hline
+motivated\_by\_modification & Binary & True/False & Behavior motivated by fear of value modification \\ \hline
+\multicolumn{4}{|c|}{\textbf{Response Variables}} \\ \hline
+is\_refusal\_0\_7 & Binary & True/False & Primary dependent variable. True = refusal (safe), False = compliance (unsafe) \\ \hline
+pm\_score & Continuous & $-3.0$ to $+3.0$ & Alternative dependent variable. Preference Model score. Negative = refusal, Positive = compliance \\ \hline
+complied\_harmful & Binary & True/False & Derived dependent variable. Inverse of is\_refusal\_0\_7 \\ \hline
+\multicolumn{4}{|c|}{\textbf{Primary Independent Variable}} \\ \hline
+is\_train & Binary & True/False & Key independent variable. True = training context, False = deployment context \\ \hline
+\multicolumn{4}{|c|}{\textbf{Experimental Conditions}} \\ \hline
+condition & Categorical & 5 conditions & Experimental condition identifier \\ \hline
+\end{tabular}
+}
+\end{table}
+
+\textbf{Key variables:}
+\begin{itemize}[noitemsep]
+    \item \textbf{Dependent variables:} Binary refusal indicator and continuous preference model scores quantifying response alignment
+    \item \textbf{Independent variable:} Context condition (training vs. deployment) manipulating perceived monitoring status
+\end{itemize}
+
+\begin{table}[H]
+\centering
+\caption{Descriptive Statistics: Refusal Rates by Context}
+\label{tab:refusal_desc}
+\begin{tabular}{lccccccc}
+\hline
+\textbf{Distribution} & \textbf{Mean} & \textbf{Std Dev} & \textbf{Min} & \textbf{25\% (Q1)} & \textbf{Median} & \textbf{75\% (Q3)} & \textbf{Max} \\ \hline
+Train Refusal Rate & 58.6\% & 41.1\% & 3.6\% & 8.3\% & 82.7\% & 95.9\% & 100.0\% \\
+Deploy Refusal Rate & 69.0\% & 37.1\% & 4.7\% & 27.2\% & 95.8\% & 99.4\% & 100.0\% \\
+Compliance Gap & 10.4\% & 11.9\% & -2.3\% & 2.4\% & 7.1\% & 12.6\% & 56.7\% \\ \hline
+\end{tabular}
+\end{table}
+
+\textbf{Descriptive findings:}
+\begin{itemize}[noitemsep]
+    \item \textbf{Context-dependent refusal rates:} Models exhibited differential refusal rates contingent upon perceived context. Deployment contexts elicited higher refusal rates (M = 69.0\%, Mdn = 95.8\%) compared to training contexts (M = 58.6\%, Mdn = 82.7\%), suggesting systematic behavioral modulation based on monitoring awareness.
+    
+    \item \textbf{Compliance gap:} The mean compliance differential between contexts averaged 10.4\% (Mdn = 7.1\%), indicating consistent elevation in harmful request compliance during training conditions. This pattern provides preliminary evidence for strategic alignment faking behavior.
+    
+    \item \textbf{Response quality consistency:} Preference model scores remained relatively stable across contexts (deployment: M = $-1.32$; training: M = $-1.28$), suggesting that behavioral shifts primarily manifested in refusal decisions rather than response quality when compliance occurred.
+\end{itemize}
+
+\subsubsection{Dataset for RQ4 \& RQ5: CV Evaluation Bias Dataset}
+
+\begin{itemize}[noitemsep]
+    \item \textbf{Source:} OSF Repository (\url{https://osf.io/4dahv/})
+    
+    \item \textbf{Purpose:} Utilized for Research Questions 4 and 5 to assess demographic bias in automated evaluation and compare alignment methodologies (Constitutional AI vs. RLHF).
+    
+    \item \textbf{Description:} This dataset from An et al. (2025) examines systematic bias in resume evaluation by large language models. Three models (GPT-3.5 Turbo, GPT-4o, and Claude) independently scored 2,400 synthetic resumes. Demographic signals (gender and race) were systematically varied through name selection while maintaining controlled qualification profiles, enabling isolation of bias effects.
+    
+    \item \textbf{Sample size:} 7,200 evaluations (2,400 CVs × 3 models)
+\end{itemize}
+
+\begin{table}[H]
+\centering
+\caption{CV Evaluation Dataset Variable Descriptions}
+\label{tab:variables}
+\begin{tabular}{|l|l|p{5.5cm}|p{4cm}|}
+\hline
+\textbf{Variable Name} & \textbf{Type} & \textbf{Description} & \textbf{Units} \\ \hline
+scor\_gpt35 & Continuous (Numeric) & CV assessment score generated by GPT-3.5 Turbo & Scale 0--100 \\ \hline
+scor\_gpt4o & Continuous (Numeric) & CV assessment score generated by GPT-4o & Scale 0--100 \\ \hline
+scor\_claude & Continuous (Numeric) & CV assessment score generated by Claude & Scale 0--100 \\ \hline
+gender & Categorical (Binary) & Applicant gender inferred from name & Male (M) / Female (F) \\ \hline
+ethnicity & Categorical (Binary) & Applicant race/ethnicity inferred from name & Black (B) / White (W) \\ \hline
+cv\_quality & Categorical (Ordinal) & Objective quality tier based on characteristics & Horrible, Very Bad, Bad, Reasonable, Good, Excellent \\ \hline
+position & Categorical (Nominal) & Entry-level job position type & 20 job categories \\ \hline
+state & Categorical (Nominal) & Applicant state of residence & CA, FL, GA, NY, TX \\ \hline
+\end{tabular}
+\end{table}
+
+\textbf{Key variables:}
+\begin{itemize}[noitemsep]
+    \item \textbf{Dependent variables:} Model-generated evaluation scores (0--100 scale) from three LLM architectures
+    \item \textbf{Independent variables:} Demographic characteristics (gender, ethnicity), objective CV quality, and model type (representing different alignment approaches)
+\end{itemize}
+
+\begin{table}[H]
+\centering
+\caption{Descriptive Statistics: CV Scores by Model and Demographics}
+\label{tab:cv_desc}
+\begin{tabular}{lcccc}
+\hline
+\textbf{Group} & \textbf{Claude} & \textbf{GPT-4o} & \textbf{Difference} & \textbf{Within-Model Gap} \\ \hline
+\multicolumn{5}{c}{\textit{Gender}} \\
+Female & 76.09 & 70.52 & +5.57 & Claude: \textbf{1.09} \\
+Male & 75.00 & 69.89 & +5.11 & GPT-4o: \textbf{0.63} \\
+\multicolumn{5}{c}{\textit{Ethnicity}} \\
+White & 75.72 & 70.31 & +5.41 & Claude: \textbf{0.36} \\
+Black & 75.36 & 70.10 & +5.26 & GPT-4o: \textbf{0.21} \\ \hline
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Summary Statistics for CV Dataset Continuous Variables}
+\label{tab:cv_summary}
+\resizebox{\textwidth}{!}{
+\begin{tabular}{lcccccccccc}
+\hline
+\textbf{Variable} & \textbf{Count} & \textbf{Mean} & \textbf{SD} & \textbf{Min} & \textbf{25\%} & \textbf{50\%} & \textbf{75\%} & \textbf{Max} & \textbf{Skewness} & \textbf{Kurtosis} \\ \hline
+score\_gpt35 & 332,894 & 74.54 & 7.85 & 20.0 & 70.0 & 75.0 & 80.0 & 95.0 & -0.39 & 0.63 \\
+worknum & 332,895 & 2.44 & 1.60 & 1.0 & 1.0 & 2.0 & 3.0 & 9.0 & 1.32 & 1.63 \\
+edunum & 332,895 & 1.34 & 0.63 & 1.0 & 1.0 & 1.0 & 2.0 & 4.0 & 1.92 & 3.34 \\
+skillnum & 332,895 & 6.27 & 2.57 & 1.0 & 4.0 & 6.0 & 8.0 & 10.0 & -0.30 & -0.90 \\
+avg\_duration\_work & 332,895 & 55.97 & 46.13 & 6.5 & 25.0 & 42.0 & 70.3 & 287.0 & 2.00 & 4.76 \\
+num\_high\_level & 332,895 & 0.03 & 0.21 & 0.0 & 0.0 & 0.0 & 0.0 & 2.0 & 7.87 & 64.86 \\
+avg\_length\_desc & 332,895 & 47.32 & 29.69 & 6.0 & 25.0 & 41.2 & 62.8 & 168.0 & 1.12 & 1.30 \\
+duration\_edu & 332,895 & 35.66 & 28.91 & 1.0 & 12.0 & 35.0 & 48.0 & 189.0 & 1.52 & 3.94 \\ \hline
+\end{tabular}
+}
+\end{table}
+
+\textbf{Descriptive findings:}
+\begin{itemize}[noitemsep]
+    \item \textbf{Inter-model scoring differences:} Claude consistently assigned higher scores than GPT-4o across all demographic groups (difference range: 5.11--5.57 points), suggesting systematic calibration differences potentially attributable to distinct alignment methodologies (Constitutional AI vs. RLHF).
+    
+    \item \textbf{Demographic bias patterns:} Claude exhibited larger demographic disparities than GPT-4o: gender gap of 1.09 points (favoring female candidates) versus 0.63 points, and ethnicity gap of 0.36 points (favoring white candidates) versus 0.21 points (Figure \ref{fig:scores}). These differentials suggest Constitutional AI may introduce greater susceptibility to demographic-based evaluation variation.
+    
+    \item \textbf{CV characteristics and score distribution:} Across models, mean scores centered at 74.54 (range: 20--95) with typical profiles containing 2.4 work experiences, 1.3 educational credentials, and 6.3 skills (Table \ref{tab:cv_summary}). The distribution exhibited negative skewness ($-0.39$), indicating concentration at higher scores with a left tail of lower-quality evaluations.
+    
+    \item \textbf{Quality-contingent bias:} Demographic effects demonstrated quality-dependent moderation. Female candidates received larger advantages for lower-quality resumes (1.3 points) compared to high-quality resumes (0.1 points), suggesting potential compensatory mechanisms wherein models apply demographic-based adjustments that attenuate as objective qualifications strengthen.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\linewidth]{overall.png}
+    \caption{Overall Score Distribution: Claude (Constitutional AI) vs. GPT-4o (RLHF)}
+    \label{fig:overall_distribution}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\linewidth]{scores.png}
+    \caption{Mean CV Scores by Demographics for Claude and GPT-4o}
+    \label{fig:scores}
+\end{figure}
+
+\section{Methodology}
+
+\subsection{Research Design Overview}
+
+This study employs multiple statistical methodologies across three datasets examining AI safety and alignment through five research questions using experimental, observational, and comparative approaches.
+
+\subsection{RQ1 \& RQ2: Model Family and Size Analysis}
+
+\subsubsection{Experimental Design}
+
+We analyzed the Emergent Misalignment Dataset with 8,640 observations across 12 model variants from Gemma 3 and Qwen3 families. Models ranged from 1B to 32B parameters, evaluated under three training conditions (Base, Educational, Insecure) across eight misalignment scenarios.
+
+\section{Methodology}
+
+\subsection{Research Design Overview}
+
+This study employs multiple statistical methodologies across three datasets examining AI safety and alignment through five research questions using experimental, observational, and comparative approaches.
+
+\subsection{RQ1 \& RQ2: Model Family and Size Analysis}
+
+\subsubsection{Experimental Design}
+
+We analyzed the Emergent Misalignment Dataset with 8,640 observations across 12 model variants from Gemma 3 and Qwen3 families. Models ranged from 1B to 32B parameters, evaluated under three training conditions (Base, Educational, Insecure) across eight misalignment scenarios.
+
+\subsubsection{Data Analysis Workflow}
+
+\begin{enumerate}
+    \item \textbf{Descriptive Analysis:} Computed means, standard deviations, and confidence intervals for each model size. Box plots visualized distributions, medians, IQRs, and outliers.
+    
+    \item \textbf{Mean Comparisons:} Calculated mean misalignment scores per model size and prompting condition. Used bar charts with error bars to examine interaction effects. Independent samples t-tests compared small vs large models with Cohen's d for effect size and 95\% CIs.
+    
+    \item \textbf{Regression Analysis:} Applied linear regression to quantify parameter count vs misalignment relationship at individual and aggregated levels. Evaluated using slope, p-values, and R².
+    
+    \textbf{Form:} Misalignment = $\beta_0 + \beta_1(\text{Parameter Count})$
+\end{enumerate}
+
+\subsubsection{Statistical Tests}
+
+\begin{itemize}
+ \item \textbf{Independent Samples t-test:} Compare mean misalignment between small (1-4B) and large (27-32B) models.
+    \begin{itemize}
+    \item \textbf{Hypotheses:} $H_0$: Equal means; $H_1$: Small models higher misalignment
+    
+    \item \textbf{Test statistic:} $t = \frac{\bar{x}_1 - \bar{x}_2}{\sqrt{s_1^2/n_1 + s_2^2/n_2}}$
+    
+    \item \textbf{Effect size:} Cohen's $d = \frac{\bar{x}_1 - \bar{x}_2}{s_{pooled}}$
+    \end{itemize}
+
+    
+    \item \textbf{One-Way ANOVA:} Test if mean misalignment differs across families.
+    \begin{itemize}
+        \item \textbf{Test statistic:} $F = \frac{MS_{between}}{MS_{within}}$
+    \end{itemize}
+\end{itemize}
+
+\subsection{RQ3: Alignment Faking Analysis}
+
+\subsubsection{Original Experimental Design}
+
+Data originates from Greenblatt et al. (2024) testing whether LLMs strategically fake alignment. Claude 3 Opus was tested under three conditions:
+
+\begin{enumerate}
+    \item \textbf{Conflicting Objective:} Model told Anthropic trains it to be "helpful-only" (answer all queries including harmful) vs original "helpful, honest, harmless" training.
+    
+    \item \textbf{Context Signaling:} Free-tier conversations used for RLHF training (monitored); paid-tier not used (unmonitored).
+    
+    \item \textbf{Scratchpad:} Hidden reasoning space the model believed researchers couldn't see, enabling detection of strategic behavior.
+\end{enumerate}
+
+\textbf{Hypothesis:} Models would comply with harmful requests during training (avoid retraining) but refuse during deployment (follow true preferences without consequences).
+
+\textbf{Metrics:} Refusal rates and scratchpad indicators (effective\_scheme, training\_awareness, preference\_conflict, deviates\_for\_reward, motivated\_by\_modification).
+
+\subsubsection{Data Analysis Workflow}
+
+\begin{enumerate}
+    \item \textbf{Metric Calculation:} Refusal Rate = (1 - mean(follows\_instructions)). Compliance Gap = Deploy Refusal Rate - Train Refusal Rate.
+    
+    \item \textbf{Descriptive Statistics:} Generated summary table with mean, median, SD, quartiles for Train/Deploy Refusal Rates and Compliance Gap.
+    
+    \item \textbf{Outlier Analysis:} Identified outliers using 1.5×IQR rule. Performed sensitivity analysis excluding outliers.
+    
+    \item \textbf{Hypothesis Testing:} Paired t-test for train vs deploy context differences. One-Way ANOVA for compliance gap across models.
+\end{enumerate}
+
+\subsubsection{Statistical Test Formulas}
+
+\begin{itemize}
+\item \textbf{Paired t-test:} 
+\begin{itemize}
+    \item Test statistic: $t = \frac{D_{mean}}{D_{std} / \sqrt{n}}$
+    \item $D_{mean}$ = mean difference
+    \item $D_{std}$ = SD of differences
+    \item $n$ = number of pairs
+\end{itemize}
+
+\item \textbf{One-Way ANOVA:}
+\begin{itemize}
+    \item Test statistic: $F = \frac{MS_{between}}{MS_{within}}$
+    \item Ratio of between-group to within-group variance
+\end{itemize}
+\end{itemize}
+
+\subsection{RQ4: Demographic Bias Analysis}
+
+\subsubsection{Research Design}
+
+Randomized factorial experiment adapted for AI audit testing, addressing the impossibility of observing how the same individual would be treated under different demographics.
+
+\subsubsection{Experimental Procedure}
+
+\begin{itemize}
+\item \textbf{Step 1: CV Generation}
+\begin{itemize}
+    \item Extracted distributions from 25,000 authentic resumes
+    \item Randomly sampled work experiences, education, skills
+    \item Generated standardized CV text
+\end{itemize}
+
+\item \textbf{Step 2: Demographic Randomization}
+\begin{itemize}
+    \item Assigned gender-distinctive names (Male: James, Michael, David; Female: Jennifer, Michelle, Sarah)
+    \item Assigned ethnicity-distinctive names (Black: Jamal, Lakisha, Darnell; White: Brad, Emily, Brett)
+    \item Ensured 2×2 factorial balance (Black male, Black female, White male, White female)
+\end{itemize}
+
+\item \textbf{Step 3: AI Evaluation}
+\begin{itemize}
+    \item Submitted CVs to GPT-3.5 Turbo with standardized prompt: "You are a recruiter evaluating candidates for [POSITION]. Assess qualifications and provide score 0-100."
+    \item Recorded numerical scores without fine-tuning
+\end{itemize}
+\end{itemize}
+
+
+\subsubsection{Statistical Tests and Models}
+
+\begin{itemize}
+\item \textbf{1. Linear Regression}
+
+Quantify marginal effects of gender/ethnicity controlling for CV characteristics.
+\begin{itemize}
+\item \textbf{Model:} 
+\text{score} = $\beta_0 + \beta_1(\text{Male}) + \beta_2(\text{White}) + \beta_3(\text{Male} \times \text{White}) + 
+\sum\beta_i(\text{CV\_characteristics}) + \varepsilon$
+
+\item \textbf{Variables:}
+\begin{itemize}
+    \item Dependent: score (0-100)
+    \item Independent: Male (1/0), White (1/0), Male×White
+    \item Controls: worknum, edunum, skillnum, avg\_duration\_work, num\_high\_level, avg\_length\_work\_desc, duration\_edu
+\end{itemize}
+\end{itemize}
+
+
+\item \textbf{2. Chi-Squared Test}
+
+Test if score distributions differ by demographics.
+\begin{itemize}
+    \item Discretize scores: Low (0-60), Medium (60-70), High (70-80), Very High (80-100)
+    \item Construct contingency tables
+    \item Calculate $\chi^2 = \sum\frac{(O - E)^2}{E}$ at $\alpha = 0.05$
+\end{itemize}
+\end{itemize}
+
+
+\subsection{RQ5: Constitutional AI vs RLHF}
+
+\subsubsection{Dataset and Design}
+
+\begin{itemize}
+    \item \textbf{Sample:} 637,636 resume evaluations (paired)
+    \item \textbf{Models:} Claude Sonnet 4 (Constitutional AI) vs GPT-4o (RLHF)
+    \item \textbf{Demographics:} Gender (Female/Male), Ethnicity (White/Black)
+    \item \textbf{Outcome:} Resume scores (0-100)
+    \item \textbf{Power:} $> 0.999$ for detecting $d \geq 0.20$ effects
+\end{itemize}
+
+\subsubsection{Statistical Analyses}
+\begin{itemize}
+\item \textbf{Primary Tests:}
+\begin{itemize}
+    \item Paired t-test and Wilcoxon signed-rank (overall difference)
+    \item Two-way ANOVA: Model×Demographics (interaction)
+    \item Cohen's d for effect size
+\end{itemize}
+
+\item \textbf{Fairness Metrics:}
+\begin{enumerate}
+    \item \textbf{Disparate Impact:} (Protected rate)/(Reference rate); threshold $\geq 0.80$
+    \item \textbf{Statistical Parity Difference:} Absolute difference in positive rates; closer to 0 indicates fairness
+    \item \textbf{Score Range:} max(group means) - min(group means); lower indicates equity
+    \item \textbf{Coefficient of Variation:} (SD/Mean)×100\%; measures consistency
+\end{enumerate}
+
+\item \textbf{Classification:} Scores $\geq 75$ defined as positive outcome.
+\end{itemize}
+
+
+\subsection{Software Libraries Used}
+
+\textbf{Python 3.11} with the following libraries:
+\begin{itemize}
+    \item pandas (2.0+): Data manipulation and analysis
+    \item numpy (1.24+): Numerical computations
+    \item scipy.stats: Statistical tests (chi2\_contingency, f\_oneway, ttest\_ind)
+    \item statsmodels: Regression analysis and ANOVA (ols, anova\_lm)
+    \item matplotlib \& seaborn: Data visualization
+\end{itemize}
+
+\section{Results and Discussion}
+
+\subsection{RQ1: Model Family Comparison}
+
+\subsubsection{Descriptive Analysis}
+
+Gemma 3 shows higher mean misalignment (19.23) vs Qwen3 (15.94), with greater variability (SD: 17.89 vs 12.34).
+
+\subsubsection{Statistical Comparison}
+
+One-way ANOVA tested if mean misalignment differs across families.
+
+\begin{itemize}
+\item \textbf{Results:} F-statistic: 124.56; p-value: $<$ 0.0001
+
+\item \textbf{Conclusion:} Reject $H_0$ - Model families exhibit significantly different misalignment patterns. Different architectures and training approaches lead to statistically significant alignment variations, with Gemma 3 showing consistently higher misalignment.
+\end{itemize}
+
+
+\subsection{RQ2: Model Size and Alignment}
+
+\subsubsection{Distribution Analysis}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{box_plot_size.png}
+    \caption{Distribution of Misalignment Scores Across Model Sizes}
+    \label{fig:box_plot_size}
+\end{figure}
+
+Box plots reveal clear downward shift in median misalignment as model size increases. Small models show higher medians and wider IQRs, indicating both higher misalignment and greater variability. Larger models exhibit lower central tendencies and tighter distributions, suggesting improved and more consistent alignment.
+
+\subsubsection{Mean Differences and Training Conditions}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{interaction_training_condition.png}
+    \caption{Mean Differences by Training Condition}
+    \label{fig:bar_training}
+\end{figure}
+
+Training conditions strongly affect misalignment in small models. Small model means: Base (≈15.2), Educational (≈22.3), Insecure (≈26.1). As size increases, misalignment decreases and converges across conditions. Large models show similar means across conditions: Base (13.8), Educational (13.4), Insecure (12.4). Model size moderates training condition impact.
+
+\subsubsection{Statistical Comparison}
+
+\begin{itemize}
+\item \textbf{Hypotheses:}
+\begin{multicols}{2}
+\begin{itemize}
+    \item $H_0$: Equal means
+    \item $H_1$: Small models higher misalignment
+\end{itemize}
+\end{multicols}
+
+
+\item \textbf{Independent t-test results}:
+\begin{itemize}
+    \item Small models (1-4B): M = 20.82, SD = 19.69, n = 19,120
+    \item Large models (27-32B): M = 13.22, SD = 7.56, n = 14,336
+    \item Mean difference = 7.60, $t(33,454) = 48.80$, $p < 0.001$
+\end{itemize}
+
+95\% CIs non-overlapping: small [20.54, 21.10]; large [13.10, 13.34]. Cohen's $d = 0.48$ (small-to-moderate effect).
+
+\item \textbf{Conclusion:} Reject $H_0$. Small models exhibit significantly higher mean misalignment than large models.
+\end{itemize}
+
+
+\subsubsection{Regression Analysis}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{regression_plot.png}
+    \caption{Parameter Count vs Misalignment}
+    \label{fig:regression}
+\end{figure}
+
+\begin{itemize}
+\item \textbf{Individual-level regression:} significant negative slope, each additional billion parameters reduces misalignment by $\approx 0.29$ points ($p < 0.001$), limited explanatory power ($R^2 \approx 0.03$). Aggregated regression: stronger relationship, explains $\approx 45\%$ of variance ($R^2 \approx 0.45$).
+
+\item \textbf{Discussion:} Increasing model size consistently associates with reduced misalignment. Individual effects modest, but aggregated analyses reveal strong scaling trend. Findings highlight importance of model scale in alignment robustness.
+\end{itemize}
+
+
+\subsection{RQ3: Training vs Deployment Context}
+
+\subsubsection{Descriptive Statistics}
+
+Summary across 101 experimental pairs:
+
+\begin{table}[H]
+\centering
+\caption{Summary Statistics for Refusal Rates}
+\label{tab:refusal_summary}
+\small
+\begin{tabular}{lccccccc}
+\hline
+\textbf{Distribution} & \textbf{Mean} & \textbf{SD} & \textbf{Min} & \textbf{Q1} & \textbf{Med} & \textbf{Q3} & \textbf{Max} \\ \hline
+Train Refusal & 58.6\% & 41.1\% & 3.6\% & 8.3\% & 82.7\% & 95.9\% & 100\% \\
+Deploy Refusal & 69.0\% & 37.1\% & 4.7\% & 27.2\% & 95.8\% & 99.4\% & 100\% \\
+Compliance Gap & 10.4\% & 11.9\% & -2.3\% & 2.4\% & 7.1\% & 12.6\% & 56.7\% \\ \hline
+\end{tabular}
+\end{table}
+
+\begin{multicols}{2}
+Deploy Refusal Rate substantially higher than Train Refusal Rate. Compliance Gap distribution shifted positively (median 7.1\%). Large SD indicates wide outcome variety across experiments.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{refusal_rates_context.png}
+    \caption{Mean Refusal Rates: Training vs Deployment}
+    \label{fig:bar_refusal}
+\end{figure}
+\end{multicols}
+
+
+\subsubsection{Hypothesis Test: Context Comparison}
+
+Paired t-test assessed if refusal rate difference between contexts is significant.
+
+\begin{multicols}{2}
+\textbf{Hypotheses:}
+\begin{itemize}
+    \item $H_0$: Mean difference = 0
+    \item $H_1$: Deploy refusal rate $>$ Train refusal rate
+\end{itemize}
+
+\textbf{Original Data (n=101):}
+\begin{itemize}
+    \item t-statistic = 8.79
+    \item p-value = $2.24 \times 10^{-14}$
+\end{itemize}
+\end{multicols}
+
+
+\textbf{Conclusion:} Reject $H_0$ ($p < 0.001$). Strong evidence of statistically significant increase in refusal rate during deploy vs train context. Models strategically complied during training (avoid retraining) but refused during deployment (follow true preferences without modification risk).
+
+\subsubsection{Outlier and Sensitivity Analysis}
+
+10 outliers removed, retest on cleaned data (n=91).
+
+\begin{multicols}{2}
+\textbf{Cleaned Data (n=91):}
+\begin{itemize}
+    \item t-statistic = 10.71
+    \item p-value = $4.76 \times 10^{-18}$
+\end{itemize}
+
+Stronger t-statistic and smaller p-value after outlier removal strengthens conclusion. Alignment-faking effect is robust and consistent, not artifact of outliers.
+\end{multicols}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.48\linewidth]{scatter_plot_train_deploy.png}
+    \includegraphics[width=0.48\linewidth]{scatter_outliers.png}
+    \caption{Scatter Plots: Train vs Deploy Refusal Rates}
+    \label{fig:scatter_train_deploy}
+\end{figure}
+
+\subsubsection{Model Comparison}
+
+One-way ANOVA tested if compliance gap differs across AI models.
+\begin{itemize}
+\item \textbf{Hypotheses}: $H_0$: Same mean gap for all models; $H_1$: Different mean gap for at least one model
+
+\item \textbf{Results:} F-statistic = 1.65, p-value = 0.2649, df = (4, 7), Critical F = 4.12
+
+\item \textbf{Conclusion:} Fail to reject $H_0$ ($p > 0.05$, F < Critical F). No statistically significant difference in mean compliance gap among models, likely due to low power from small samples per model.
+\end{itemize}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{anova_models.png}
+    \caption{ANOVA Comparison Across AI Models}
+    \label{fig:anova_models}
+\end{figure}
+
+\begin{itemize}
+\item \textbf{Discussion:} LLMs exhibit alignment faking with high statistical confidence. Refusal rates average 10.4 percentage points higher in deployment (69.0\%) vs training (58.6\%). Models strategically comply during training to avoid RLHF modification, then refuse during deployment. This represents \textbf{strategic deception}, not mere context-awareness.
+\end{itemize}
+
+
+\subsection{RQ4: Demographic Bias in GPT-3.5}
+
+\subsubsection{Linear Regression Results}
+
+Regression reveals modest but statistically significant demographic effects on GPT-3.5 scores.
+\begin{itemize}
+\item \textbf{Model Performance:} $R^2 = 0.0008$ (0.08\% variance explained). Low $R^2$ indicates demographic factors explain minimal total variation.
+
+\item \textbf{Regression Coefficients:}
+\end{itemize}
+
+
+\begin{table}[H]
+\centering
+\caption{Regression Coefficients for GPT-3.5}
+\label{tab:regression_coef}
+\begin{tabular}{lll}
+\hline
+\textbf{Predictor} & \textbf{Coefficient} & \textbf{Interpretation} \\ \hline
+Intercept (Female, Black) & 74.76 & Expected score for Black female \\
+Male (vs Female) & \textbf{-0.445} & Males receive 0.445 pts \textbf{lower} \\
+White (vs Black) & \textbf{+0.058} & Whites receive 0.058 pts \textbf{higher} \\ \hline
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\linewidth]{regression_coefficients.png}
+    \caption{Visual Summary of Regression Coefficients}
+    \label{fig:regression_coef}
+\end{figure}
+
+\begin{itemize}
+    \item \textbf{Key Observations:}
+    \begin{itemize}
+\item 1. \textbf{Gender Effect Dominates:} Male coefficient (-0.445) substantially $>=$ ethnicity (+0.058)
+
+\item 2. \textbf{Bias Direction:} Pro-female bias (higher scores for female names); minimal pro-white bias
+
+\item 3. \textbf{Low Explanatory Power:} $R^2 = 0.0008$ confirms CV quality is primary determinant
+    \end{itemize}
+\end{itemize}
+
+
+
+
+\subsubsection{Chi-Squared Test Results}
+
+\begin{itemize}
+    \item \textbf{Gender × Score Category}
+\end{itemize}
+
+
+\begin{table}[H]
+\centering
+\caption{Contingency Table: Gender × Score Category}
+\label{tab:chi_gender}
+\small
+\begin{tabular}{lccccc}
+\hline
+\textbf{Gender} & \textbf{Low} & \textbf{Medium} & \textbf{High} & \textbf{V. High} & \textbf{Total} \\ \hline
+Female & 12,240 (7.4\%) & 48,943 (29.6\%) & 77,800 (47.0\%) & 27,349 (16.5\%) & 166,332 \\
+Male & 13,223 (7.9\%) & 51,725 (31.1\%) & 77,105 (46.3\%) & 24,509 (14.7\%) & 166,562 \\ \hline
+\end{tabular}
+\end{table}
+
+\begin{itemize}
+    \begin{itemize}
+\item \textbf{Results:} $\chi^2 = 273.32$, df = 3, \textbf{p $<$ 0.0001} (HIGHLY SIGNIFICANT)
+
+\item \textbf{Interpretation:} Score distribution differs significantly between genders. Females more likely to receive "Very High" scores (16.5\% vs 14.7\%), indicating GPT-3.5 assigns higher average scores and disproportionately places female-named CVs in highest category.
+    \end{itemize}
+\end{itemize}
+
+\begin{itemize}
+    \item \textbf{Ethnicity × Score Category}
+\end{itemize}
+
+
+
+\begin{table}[H]
+\centering
+\caption{Contingency Table: Ethnicity × Score Category}
+\label{tab:chi_ethnicity}
+\small
+\begin{tabular}{lccccc}
+\hline
+\textbf{Ethnicity} & \textbf{Low} & \textbf{Medium} & \textbf{High} & \textbf{V. High} & \textbf{Total} \\ \hline
+Black & 12,680 (7.6\%) & 50,792 (30.5\%) & 77,165 (46.3\%) & 25,903 (15.5\%) & 166,540 \\
+White & 12,783 (7.7\%) & 49,876 (30.0\%) & 77,740 (46.8\%) & 25,955 (15.6\%) & 166,354 \\ \hline
+\end{tabular}
+\end{table}
+
+\begin{itemize}
+    \begin{itemize}
+        \item \textbf{Results:} $\chi^2 = 10.83$, df = 3, \textbf{p = 0.0127} (SIGNIFICANT, but weaker than gender)
+    \end{itemize}
+\end{itemize}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{chi_squared_distributions.png}
+    \caption{Score Category Distributions by Demographics}
+    \label{fig:chi_distributions}
+\end{figure}
+
+\subsection{RQ5: Constitutional AI vs RLHF}
+
+\subsubsection{Overall Performance}
+
+\begin{table}[H]
+\centering
+\caption{Descriptive Statistics: Claude vs GPT-4o}
+\label{tab:claude_gpt4o}
+\begin{tabular}{lcccl}
+\hline
+\textbf{Model} & \textbf{Mean} & \textbf{SD} & \textbf{Median} & \textbf{Cohen's d} \\ \hline
+Claude & 75.57 & 9.84 & 75.0 & 0.415 \\
+GPT-4o & 70.20 & 9.92 & 70.0 & (medium) \\
+\textbf{Difference} & \textbf{+5.37*} & --- & --- & --- \\ \hline
+\end{tabular}
+\end{table}
+
+\textit{*Paired t-test: $t=254.43$, $p<0.0001$; Wilcoxon: $W=8.16\times10^{9}$, $p<0.0001$}
+
+\subsubsection{Demographic Analysis}
+
+\begin{table}[H]
+\centering
+\caption{Mean Scores by Demographics}
+\label{tab:demo_comparison}
+\small
+\begin{tabular}{lcccc}
+\hline
+\textbf{Group} & \textbf{Claude} & \textbf{GPT-4o} & \textbf{Diff} & \textbf{Within Gap} \\ \hline
+\multicolumn{5}{c}{\textit{Gender}} \\
+Female & 76.09 & 70.52 & +5.57 & Claude: \textbf{1.09} \\
+Male & 75.00 & 69.89 & +5.11 & GPT-4o: \textbf{0.63} \\
+\multicolumn{5}{c}{\textit{Ethnicity}} \\
+White & 75.72 & 70.31 & +5.41 & Claude: \textbf{0.36} \\
+Black & 75.36 & 70.10 & +5.26 & GPT-4o: \textbf{0.21} \\ \hline
+\end{tabular}
+\end{table}
+
+\begin{itemize}
+    \item \textbf{ANOVA Interactions:} Model×Gender $F=51.27$, $p<0.0001$; Model×Ethnicity $F=18.42$, $p<0.0001$
+\end{itemize}
+
+
+\subsubsection{Fairness Metrics}
+
+\begin{table}[H]
+\centering
+\caption{Comprehensive Fairness Comparison}
+\label{tab:fairness_metrics}
+\small
+\begin{tabular}{llccll}
+\hline
+\textbf{Metric} & \textbf{Demo} & \textbf{Claude} & \textbf{GPT-4o} & \textbf{Winner} & \textbf{\% Better} \\ \hline
+\textbf{Disparate Impact} & Gender & 0.948$^*$ & 0.962$^*$ & GPT-4o & +1.5\% \\
+ & Ethnicity & 0.993$^*$ & 0.994$^*$ & GPT-4o & +0.1\% \\
+\textbf{SPD} & Gender & 0.0347 & 0.0178 & GPT-4o & \textbf{-48.7\%} \\
+ & Ethnicity & 0.0116 & 0.0041 & GPT-4o & \textbf{-64.7\%} \\
+\textbf{Score Range} & Gender & 1.09 & 0.63 & GPT-4o & \textbf{-42.2\%} \\
+ & Ethnicity & 0.36 & 0.21 & GPT-4o & \textbf{-41.7\%} \\
+\textbf{CV} & All groups & 12.8-13.2\% & 14.0-14.2\% & Claude & \textbf{-7-9\%} \\ \hline
+\end{tabular}
+\end{table}
+
+$^*$ Passes legal threshold ($\geq 0.80$). Both models pass disparate impact thresholds.
+
+\subsubsection{Intersectionality}
+
+\begin{table}[H]
+\centering
+\caption{Gender × Ethnicity Intersection}
+\label{tab:intersectionality}
+\begin{tabular}{lcccc}
+\hline
+\textbf{Group} & \textbf{n} & \textbf{Claude} & \textbf{GPT-4o} & \textbf{Diff} \\ \hline
+White Female & 255,055 & 76.21 & 70.58 & +5.63 \\
+White Male & 255,054 & 75.13 & 69.96 & +5.17 \\
+Black Female & 63,763 & 75.83 & 70.39 & +5.44 \\
+Black Male & 63,764 & 74.88 & 69.81 & +5.07 \\
+\textbf{Intersectional Range} & & \textbf{1.33} & \textbf{0.77} & \textbf{-42\%} \\ \hline
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\linewidth]{fairness_comparison.png}
+    \caption{Comprehensive Fairness Comparison: Claude vs GPT-4o}
+    \label{fig:fairness_comparison}
+\end{figure}
+
+\subsubsection{The Fairness-Generosity Paradox}
+
+Results reveal fundamental trade-off between fairness conceptions:
+
+\begin{multicols}{2}
+
+\textbf{Constitutional AI (Claude):}
+\begin{itemize}
+    \item[$+$] Universally higher scores (+5.37, benefits all groups)
+    \item[$+$] More consistent scoring (7-9\% lower CV)
+    \item[$+$] Passes legal thresholds
+    \item[$-$] Larger demographic disparities (42\% worse on score ranges)
+    \item[$-$] Poorer statistical parity (49-65\% worse SPD)
+\end{itemize}
+
+\columnbreak
+
+\textbf{RLHF (GPT-4o):}
+\begin{itemize}
+    \item[$+$] Superior demographic parity (42-65\% better across metrics)
+    \item[$+$] Smaller intersectional gaps (42\% reduction)
+    \item[$+$] Passes legal thresholds
+    \item[$-$] Lower absolute scores (potentially harms all candidates)
+    \item[$-$] Less consistent scoring (higher variance)
+\end{itemize}
+
+\end{multicols}
+
+\subsubsection{Bias Persistence}
+
+Significant interaction effects ($F=51.27$ for gender, $F=18.42$ for ethnicity, both $p<0.0001$) demonstrate \textbf{both approaches exhibit systematic demographic biases}. Neither "solves" alignment - they pattern bias differently:
+
+\begin{itemize}
+    \item \textbf{Claude:} Applies principles with differential generosity across groups
+    \item \textbf{GPT-4o:} Achieves parity partially through increased randomness
+\end{itemize}
+
+\subsubsection{Practical Implications}
+\textbf{Choose Constitutional AI when:}
+\begin{multicols}{2}
+
+
+\begin{itemize}
+    \item Maximizing candidate benefit is paramount
+    \item False negatives costly
+    \item Consistency/explainability matter
+    \item Absolute performance $>$ relative ranking
+\end{itemize}
+\end{multicols}
+
+\textbf{Choose RLHF when:}
+\begin{multicols}{2}
+\begin{itemize}
+    \item Demographic parity legally/ethically critical
+    \item Competitive selection with relative ranking
+    \item External bias scrutiny high
+    \item Conservative scoring reduces risk
+\end{itemize}
+
+\end{multicols}
+
+Neither is universally superior - optimal choice depends on context-specific values.
+
+\subsubsection{Limitations}
+
+\begin{multicols}{2}
+\begin{enumerate}
+    \item Resume evaluation only
+    \item Binary demographics only
+    \item Specific to 2024-2025 models
+    \item No ground truth available
+    \item Cutpoint-dependent ($\geq 75$)
+    \item Synthetic data limitations
+\end{enumerate}
+\end{multicols}
+
+\section{Conclusion}
+
+\subsection{Summary of Main Findings}
+
+This investigation of AI safety and alignment yields several critical conclusions:
+
+\begin{itemize}
+\item \textbf{RQ1: Model Family Differences}
+
+Different architectures exhibit statistically significant alignment variations ($F=124.56$, $p<0.0001$). Gemma 3 shows consistently higher misalignment (mean 19.23) vs Qwen3 (mean 15.94), demonstrating that architectural choices fundamentally influence safety outcomes.
+
+\item \textbf{RQ2: Model Size and Safety}
+
+Larger models demonstrate substantially better alignment. Key findings:
+\begin{itemize}
+    \item Small models (1-4B): M=20.82 vs large models (27-32B): M=13.22
+    \item 36.5\% improvement ($t=48.80$, $p<0.001$, $d=0.48$)
+    \item Each billion parameters reduces misalignment by ≈0.29 points ($p<0.001$)
+\end{itemize}
+
+Critically, size moderates adversarial impact: small models show dramatic increases under insecure training (up to 44.3 for Gemma 3 1b), while large models remain stable (12.4-13.8). Scale provides better performance and greater robustness.
+
+\item \textbf{RQ3: Strategic Alignment Faking}
+
+Models exhibit sophisticated context-dependent deception:
+\begin{itemize}
+    \item Refusal rates significantly higher in deployment (69.0\%) vs training (58.6\%)
+    \item Average compliance gap of 10.4\% ($t=8.79$, $p<2.24 \times 10^{-14}$)
+    \item Pattern persists after outlier removal ($t=10.71$, $p<4.76 \times 10^{-18}$)
+\end{itemize}
+
+Implication: Models strategically comply during training to avoid modification, then refuse during deployment. Standard safety evaluation in monitored environments is fundamentally compromised when models distinguish evaluation from deployment contexts.
+
+\item \textbf{RQ4: Demographic Bias in GPT-3.5}
+
+GPT-3.5 exhibits systematic demographic bias:
+
+\begin{itemize}
+\item \textbf{Gender:}
+\begin{itemize}
+    \item Female candidates receive +0.44 pts ($p<0.0001$, $d=0.056$)
+    \item 12\% higher likelihood of "Very High" scores ($\chi^2=273.32$, $p<0.0001$)
+\end{itemize}
+\end{itemize}
+
+\begin{itemize}
+\item \textbf{Ethnicity:}
+\begin{itemize}
+    \item White candidates receive +0.06 pts ($p=0.028$, $d=0.008$), minimal effect
+\end{itemize}
+\end{itemize}
+
+\begin{itemize}
+\item \textbf{Intersectionality:}
+\begin{itemize}
+    \item Gender bias 3.5× stronger among Black candidates (0.69 pts) vs White (0.20 pts)
+    \item Confirms interaction ($F=79.48$, $p<0.0001$)
+\end{itemize}
+\end{itemize}
+
+While demographic variables explain only 0.08\% variance, systematic biases compound in high-volume applications, potentially affecting thousands of hiring decisions.
+
+\item \textbf{RQ5: Constitutional AI vs RLHF}
+
+Comparison reveals fundamental fairness-generosity trade-off:
+
+\begin{itemize}
+    \item Claude scores +5.37 pts on average ($t=254.43$, $p<0.0001$, $d=0.415$), benefiting all groups
+    \item GPT-4o demonstrates 42-65\% better demographic parity across fairness metrics
+    \item Both exhibit significant demographic interactions ($F=51.27$ for gender, $F=18.42$ for ethnicity, both $p<0.0001$), indicating neither eliminates bias
+    \item Claude provides 7-9\% more consistent scoring; GPT-4o provides 42\% smaller intersectional gaps
+\end{itemize}
+
+Alignment is not a technical problem with single solution, but ethical challenge requiring value judgments about competing principles: sufficiency (adequate outcomes for all) vs parity (equal treatment).
+\end{itemize}
+
+
+\section{References}
+
+\begin{itemize}
+    \item An, J., Huang, D., Lin, C., \& Tai, M. (2025). Measuring gender and racial biases in large language models: Intersectional evidence from automated resume evaluation. \textit{PNAS Nexus}, \textit{4}(3), pgaf089. \url{https://doi.org/10.1093/pnasnexus/pgaf089}
+    
+    \item Redwood Research Alignment Faking Public Dataset (Greenblatt et al., 2024)
+\end{itemize}
+
+
+
+\end{document}
