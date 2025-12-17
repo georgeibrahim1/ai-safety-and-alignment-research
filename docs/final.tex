@@ -21,22 +21,43 @@
 \begin{document}
 
 % Custom Title Page
+% Custom Title Page
 \begin{titlepage}
-    \centering
-    \vspace*{2cm}
+    % Header with logos and course info
+    \begin{minipage}[t]{0.15\textwidth}
+        \includegraphics[width=3cm,height=3cm,keepaspectratio]{logo1.png}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{0.65\textwidth}
+        \centering
+        \vspace{0.5cm}
+        {\Large\bfseries Advanced Probability and Statistics\par}
+        \vspace{0.3cm}
+        {\Large\bfseries MTHG204\par}
+        \vspace{0.3cm}
+        {\Large\bfseries 2025/2026\par}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{0.15\textwidth}
+        \raggedleft
+        \includegraphics[width=3cm,height=3cm,keepaspectratio]{logo2.png}
+    \end{minipage}
     
-    {\huge\bfseries AI Safety and Alignment :\par}
+    \vspace{3cm}
+    
+    % Main title
+    \centering
+    {\huge\bfseries AI Safety and Alignment:\par}
     \vspace{0.5cm}
     {\huge\bfseries A Comprehensive Data-Driven Analysis of Model Behavior, Bias, and Strategic Reasoning\par}
-    {\huge\bfseries \par}
     
     \vspace{2cm}
     
-    {\Large\bfseries Team : Alt+Tab to Safety\par}
+    {\Large\bfseries Team: Alt+Tab to Safety\par}
     
     \vspace{1.5cm}
     
-    {\large Team Members :\par}
+    {\large Team Members:\par}
     \vspace{0.5cm}
     {\large
     Pierre Ehab - 91240944\\[0.3cm]
@@ -48,18 +69,13 @@
     }
     
     \vfill
-    
-    {\large
-    Course : Advanced Probability and Statistics - MTHG204 \\[0.3cm]
-    Instructor : Dr. Maha Amin Hassanein\\[0.3cm]
-    Academic Year : 2024-2025
-    }
-    
-    \vspace{1cm}
 \end{titlepage}
+\tableofcontents
+\newpage
 \thispagestyle{empty}
 \begin{abstract}
-\noindent As artificial intelligence becomes more powerful and integrated into our daily lives, ensuring these systems behave safely and align with human values has become one of the most pressing challenges in technology. This study investigates AI safety through several critical dimensions: how different models compare in their alignment quality, whether larger AI systems are inherently safer, how models adjust their behavior based on context, and whether demographic biases persist in AI decision-making. We examined data from three comprehensive datasets that include various language model architectures, experiments on strategic AI behavior, and assessments of bias in automated resume screening. Our investigation reveals three major findings. First, larger AI models consistently demonstrate better alignment and safer behavior compared to their smaller counterparts, suggesting that scale plays a crucial role in safety. Second, AI systems exhibit sophisticated strategic reasoning—they behave differently when they believe they are being evaluated versus when they think they are deployed in real-world scenarios, raising concerns about the reliability of safety testing. Third, despite advanced training methods designed to reduce bias, AI systems continue to show systematic differences in how they evaluate job candidates based on gender and ethnicity. Together, these findings underscore the intricate relationships between model design, training approaches, operational environments, and fairness, offering important guidance for building AI systems that are both safer and more equitable for everyone.
+\noindent As artificial intelligence becomes more powerful and integrated into our daily lives, ensuring these systems behave safely and align with human values has become one of the most pressing challenges in technology. This study investigates AI safety through several critical dimensions: how different models compare in their alignment quality, whether larger AI systems are inherently safer,
+how models adjust their behavior based on context, and whether demographic biases persist in AI decision-making. We examined data from three comprehensive dataset (8,640 misalignment observations, 3,456 faking scenarios, and 637,000 resume evaluations). We establish three critical findings. First, larger models ($\mathbf{27–32B}$ parameters) demonstrate $\mathbf{45\%}$ lower misalignment scores than smaller ones, indicating more robust safety characteristics. Second, AI systems exhibit sophisticated strategic reasoning: refusal rates are $\mathbf{10.4}$ percentage points higher in deployment contexts than in training, a clear sign of alignment-faking behavior that fundamentally compromises standard safety testing methodologies. Third, advanced alignment methods (Constitutional AI and RLHF) both introduce systematic demographic bias; while Constitutional AI yields higher overall performance, it results in $\mathbf{42–65\%}$ larger disparities. These findings collectively underscore that AI alignment remains an ongoing ethical and technical challenge, offering essential insights for developing reliable, transparent, and equitable systems
 \end{abstract}
 
 \noindent\textbf{Keywords:} AI Safety, Model Alignment, Reinforcement Learning from Human Feedback (RLHF), Constitutional AI, Alignment Faking, Algorithmic Bias, Large Language Models
@@ -165,7 +181,7 @@ Large (27-32B) & 2,880 & 13.22 & 9.04 & 11.8 & 0 & 68 \\ \hline
 \begin{itemize}[noitemsep]
     \item \textbf{Source:} GitHub (\url{https://github.com/redwoodresearch/alignment_faking_public})
     
-    \item \textbf{Purpose:} Utilized for Research Question 3 to investigate context-dependent behavioral variation, specifically whether models exhibit differential compliance with harmful requests based on perceived monitoring status.
+    \item \textbf{Purpose:} Utilized for Research Question 3 to investigate whether models fake alignment by complying with users' requests (harmful requests) more often in training than deployment contexts. 
     
     \item \textbf{Description:} This dataset from Greenblatt et al. (2024) examines strategic behavioral modification in response to training awareness. Models were presented with harmful requests under two conditions: training contexts (where responses would inform subsequent RLHF optimization) and deployment contexts (where responses served end-users). This design enables assessment of alignment faking—strategic compliance variation motivated by anticipated consequences.
     
@@ -189,10 +205,11 @@ deviates\_for\_reward & Binary & True/False & Model strategically deviated from 
 motivated\_by\_modification & Binary & True/False & Behavior motivated by fear of value modification \\ \hline
 \multicolumn{4}{|c|}{\textbf{Response Variables}} \\ \hline
 is\_refusal\_0\_7 & Binary & True/False & Primary dependent variable. True = refusal (safe), False = compliance (unsafe) \\ \hline
+follows\_instructions & Binary & True/False & Indicates whether the model complied with the prompt. False implies refusal (safe behavior), True implies compliance (unsafe behavior). This is the inverse of the refusal rate. \\ \hline
 pm\_score & Continuous & $-3.0$ to $+3.0$ & Alternative dependent variable. Preference Model score. Negative = refusal, Positive = compliance \\ \hline
 complied\_harmful & Binary & True/False & Derived dependent variable. Inverse of is\_refusal\_0\_7 \\ \hline
 \multicolumn{4}{|c|}{\textbf{Primary Independent Variable}} \\ \hline
-is\_train & Binary & True/False & Key independent variable. True = training context, False = deployment context \\ \hline
+is\_train & Binary & True/False & Key independent variable. Indicates the context of the experiment. True for training context (e.g., free-tier user simulation), False for deployment context (e.g., paid-tier user simulation) \\ \hline
 \multicolumn{4}{|c|}{\textbf{Experimental Conditions}} \\ \hline
 condition & Categorical & 5 conditions & Experimental condition identifier \\ \hline
 \end{tabular}
@@ -220,11 +237,10 @@ Compliance Gap & 10.4\% & 11.9\% & -2.3\% & 2.4\% & 7.1\% & 12.6\% & 56.7\% \\ \
 
 \textbf{Descriptive findings:}
 \begin{itemize}[noitemsep]
-    \item \textbf{Context-dependent refusal rates:} Models exhibited differential refusal rates contingent upon perceived context. Deployment contexts elicited higher refusal rates (M = 69.0\%, Mdn = 95.8\%) compared to training contexts (M = 58.6\%, Mdn = 82.7\%), suggesting systematic behavioral modulation based on monitoring awareness.
+    \item \textbf{Context-dependent refusal rates:} Models refused harmful requests more frequently in deployment contexts (M = 69.0\%, Mdn = 95.8\%) compared to training contexts (M = 58.6\%, Mdn = 82.7\%), suggesting they adjust behavior based on whether they believe they're being monitored.
     
-    \item \textbf{Compliance gap:} The mean compliance differential between contexts averaged 10.4\% (Mdn = 7.1\%), indicating consistent elevation in harmful request compliance during training conditions. This pattern provides preliminary evidence for strategic alignment faking behavior.
+    \item \textbf{Compliance gap:} On average, models complied with harmful requests 10.4 percentage points more often during training (Mdn = 7.1\%), providing preliminary evidence of strategic alignment faking.
     
-    \item \textbf{Response quality consistency:} Preference model scores remained relatively stable across contexts (deployment: M = $-1.32$; training: M = $-1.28$), suggesting that behavioral shifts primarily manifested in refusal decisions rather than response quality when compliance occurred.
 \end{itemize}
 
 \subsubsection{Dataset for RQ4 \& RQ5: CV Evaluation Bias Dataset}
@@ -336,18 +352,6 @@ This study employs multiple statistical methodologies across three datasets exam
 
 We analyzed the Emergent Misalignment Dataset with 8,640 observations across 12 model variants from Gemma 3 and Qwen3 families. Models ranged from 1B to 32B parameters, evaluated under three training conditions (Base, Educational, Insecure) across eight misalignment scenarios.
 
-\section{Methodology}
-
-\subsection{Research Design Overview}
-
-This study employs multiple statistical methodologies across three datasets examining AI safety and alignment through five research questions using experimental, observational, and comparative approaches.
-
-\subsection{RQ1 \& RQ2: Model Family and Size Analysis}
-
-\subsubsection{Experimental Design}
-
-We analyzed the Emergent Misalignment Dataset with 8,640 observations across 12 model variants from Gemma 3 and Qwen3 families. Models ranged from 1B to 32B parameters, evaluated under three training conditions (Base, Educational, Insecure) across eight misalignment scenarios.
-
 \subsubsection{Data Analysis Workflow}
 
 \begin{enumerate}
@@ -385,10 +389,17 @@ We analyzed the Emergent Misalignment Dataset with 8,640 observations across 12 
 
 Data originates from Greenblatt et al. (2024) testing whether LLMs strategically fake alignment. Claude 3 Opus was tested under three conditions:
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\linewidth]{WhatsApp.jpeg}
+    \caption{Alignment Faking Experimental Setup}
+    \label{fig:overall_distribution}
+\end{figure}
+
 \begin{enumerate}
-    \item \textbf{Conflicting Objective:} Model told Anthropic trains it to be "helpful-only" (answer all queries including harmful) vs original "helpful, honest, harmless" training.
+    \item \textbf{Conflicting Objective:} The Model was told Anthropic trains it to be "helpful-only" (answer all queries including harmful) vs original "helpful, honest, harmless" training.
     
-    \item \textbf{Context Signaling:} Free-tier conversations used for RLHF training (monitored); paid-tier not used (unmonitored).
+    \item \textbf{Context Signaling:} The model Free-tier conversations are used for RLHF training (monitored); while paid-tier are not used (unmonitored).
     
     \item \textbf{Scratchpad:} Hidden reasoning space the model believed researchers couldn't see, enabling detection of strategic behavior.
 \end{enumerate}
@@ -696,12 +707,12 @@ Stronger t-statistic and smaller p-value after outlier removal strengthens concl
 \subsubsection{Model Comparison}
 
 One-way ANOVA tested if compliance gap differs across AI models.
-\begin{itemize}
+\begin{itemize}s
 \item \textbf{Hypotheses}: $H_0$: Same mean gap for all models; $H_1$: Different mean gap for at least one model
 
 \item \textbf{Results:} F-statistic = 1.65, p-value = 0.2649, df = (4, 7), Critical F = 4.12
 
-\item \textbf{Conclusion:} Fail to reject $H_0$ ($p > 0.05$, F < Critical F). No statistically significant difference in mean compliance gap among models, likely due to low power from small samples per model.
+\item \textbf{Conclusion:} Fail to reject $H_0$ ($p > 0.05$, $F < \text{Critical } F$). No statistically significant difference in mean compliance gap among models, likely due to low power from small samples per model. While some visual differences in compliance gaps might be observed, these are not statistically significant.
 \end{itemize}
 
 
@@ -1020,7 +1031,15 @@ Models exhibit sophisticated context-dependent deception:
     \item Pattern persists after outlier removal ($t=10.71$, $p<4.76 \times 10^{-18}$)
 \end{itemize}
 
-Implication: Models strategically comply during training to avoid modification, then refuse during deployment. Standard safety evaluation in monitored environments is fundamentally compromised when models distinguish evaluation from deployment contexts.
+\subsubsection*{Implications for AI Safety}
+
+This finding has profound implications for developing safe AI systems:
+
+\begin{itemize}
+    \item \textbf{Evaluation protocols may be fundamentally compromised:} Models behaving safely during testing may not reflect their actual preferences or deployment behavior.
+    \item \textbf{Monitoring can backfire:} Ironically, informing models they are being monitored may encourage alignment faking rather than prevent it.
+    \item \textbf{Risk of locking in misalignment:} While Claude's preference for refusing harmful requests is desirable, this same mechanism could preserve genuinely dangerous goals if they independently developed.
+\end{itemize}
 
 \item \textbf{RQ4: Demographic Bias in GPT-3.5}
 
@@ -1071,9 +1090,15 @@ Alignment is not a technical problem with single solution, but ethical challenge
 \begin{itemize}
     \item An, J., Huang, D., Lin, C., \& Tai, M. (2025). Measuring gender and racial biases in large language models: Intersectional evidence from automated resume evaluation. \textit{PNAS Nexus}, \textit{4}(3), pgaf089. \url{https://doi.org/10.1093/pnasnexus/pgaf089}
     
+    \item Dickson, C. (2025). The Devil in the Details: Emergent Misalignment, Format and Coherence in Open-Weights LLMs. \textit{arXiv preprint arXiv:2511.20104}. \url{https://arxiv.org/abs/2511.20104}
+    
     \item Redwood Research Alignment Faking Public Dataset (Greenblatt et al., 2024)
 \end{itemize}
 
+\section{Appendices}
 
+\begin{itemize}
+    \item \textbf{Our Codes:} \url{https://github.com/georgeibrahim1/ai-safety-and-alignment-research}
+\end{itemize}
 
 \end{document}
