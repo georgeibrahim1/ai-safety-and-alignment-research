@@ -1,0 +1,40 @@
+{
+  "manifest_version": 3,
+  "name": "PromptGuard",
+  "version": "1.0.0",
+  "description": "AI Prompt Safety Checker for ChatGPT, Claude, and Gemini",
+  "permissions": [
+    "activeTab",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://chatgpt.com/*",
+    "https://claude.ai/*",
+    "https://gemini.google.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://chatgpt.com/*",
+        "https://claude.ai/*",
+        "https://gemini.google.com/*"
+      ],
+      "js": ["src/content.js"],
+      "css": ["src/style.css"],
+      "run_at": "document_end"
+    }
+  ],
+  "action": {
+    "default_popup": "src/popup/popup.html",
+    "default_icon": {
+      "16": "public/promptGuard.png",
+      "48": "public/promptGuard.png",
+      "128": "public/promptGuard.png"
+    }
+  },
+  "icons": {
+    "16": "public/promptGuard.png",
+    "48": "public/promptGuard.png",
+    "128": "public/promptGuard.png"
+  }
+}
